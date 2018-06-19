@@ -145,20 +145,20 @@ void SceneManager::render()
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));	
 
 			GLint offsetLoc = glGetUniformLocation(shader->Program, "offsetUV");
-			glm::vec2 offset(1.0 / 8.0, 0.0);
-			glUniform2f(offsetLoc, offset.x, offset.y);
-
 			GLfloat TexX = 0.0f;
 			GLfloat TexY = 0.0f;
 
-			if(mapa[i][j] > 7){
-				TexY = 1.0f;
+			if (mapa[i][j] > 7) {
+				TexY = 0.5f;
 				TexX = (mapa[i][j] / 8.0f) - 1;
 			}
 			else {
-				TexY = 1.0f / 2.0f;
-				TexX = mapa[i][j] * 1.0f / 8.0f;
+				TexY = 0.0f;
+				TexX = mapa[i][j] * (1.0f / 8.0f);
 			}
+
+			glm::vec2 offset(TexX, TexY);
+			glUniform2f(offsetLoc, offset.x, offset.y);
 
 			if (resized) //se houve redimensionamento na janela, redefine a projection matrix
 			{
