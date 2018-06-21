@@ -23,7 +23,8 @@ public:
 	static void resize(GLFWwindow* window, int width, int height);
 
 	void do_movement();
-	void render();
+	void renderBackGround();
+	void renderPlayer();
 	void run();
 	void finish();
 
@@ -31,7 +32,7 @@ public:
 	// scene
 	void setupScene();
 	void setupCamera2D();
-	void setupTexture(); //apenas mostra como criar uma textura
+	void setupTexture(int textura); //apenas mostra como criar uma textura
 private:
 	
 	//GFLW window

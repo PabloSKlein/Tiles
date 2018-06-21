@@ -7,6 +7,9 @@ static bool keys[1024];
 static bool resized;
 static GLuint width, height;
 int mapa[6][6];
+// load image, create texture and generate mipmaps
+float x;
+float y;
 
 SceneManager::SceneManager()
 {
@@ -20,7 +23,7 @@ void SceneManager::initialize(GLuint w, GLuint h)
 {
 	width = w;
 	height = h;
-	
+
 	ifstream file("../SetupTiles.txt");
 	if (!file) {
 		cout << "-";
@@ -111,10 +114,22 @@ void SceneManager::do_movement()
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		y -= 10.00f;
+	}else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		y += 10.00f;
+	}else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		x -= 10.00f;
+	}else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		x += 10.00f;
+	}
 }
 
-void SceneManager::render()
+void SceneManager::renderBackGround()
 {
+
+	setupTexture(1);
+
 	// Clear the colorbuffer
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -133,8 +148,8 @@ void SceneManager::render()
 			//model = glm::rotate(model, (GLfloat)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 			//model = glm::translate(model, glm::vec3(xi+j*32,yi+i*32,0.0));
 
-			xi = ((i - j) * 32.0f / 2.0f) + xo;
-			yi = (i + j) * 16.0f / 2.0f;
+			xi = ((i - j) * 64.0f / 2.0f) + xo;
+			yi = (i + j) * 32.0f / 2.0f;
 
 			model = glm::translate(model, glm::vec3(xi, yi, 0.0));
 
@@ -175,10 +190,45 @@ void SceneManager::render()
 			// render container
 			glBindVertexArray(VAO);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 		}
 	}
-	
+}
+
+void SceneManager::renderPlayer()
+{
+	setupTexture(0);
+	// Create transformations 
+	model = glm::mat4();
+
+	model = glm::translate(model, glm::vec3(x, y, 0.0));
+
+	// Get their uniform location
+	GLint modelLoc = glGetUniformLocation(shader->Program, "model");
+
+	// Pass them to the shaders
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	GLint offsetLoc = glGetUniformLocation(shader->Program, "offsetUV");
+
+	glm::vec4 vec(1.0f, 1.0f, 0.0f, 1.0f);
+	glm::vec2 offset(0, 0);
+	glUniform2f(offsetLoc, offset.x, offset.y);
+
+	if (resized) //se houve redimensionamento na janela, redefine a projection matrix
+	{
+		setupCamera2D();
+		resized = false;
+	}
+
+	// bind Texture
+	// Bind Textures using texture units
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glUniform1i(glGetUniformLocation(shader->Program, "ourTexture1"), 0);
+
+	// render container
+	glBindVertexArray(VAO);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 }
 
@@ -195,7 +245,9 @@ void SceneManager::run()
 		do_movement();
 
 		//Render scene
-		render();
+		renderBackGround();
+
+		renderPlayer();
 		
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
@@ -213,22 +265,14 @@ void SceneManager::setupScene()
 {
 	float u = 1.0 / 8.0, v = 1.0/2.0;
 
-	float wt = 32.0f, ht = 16.0f;
-
-	//float vertices[] = {
-	//	// positions          // colors           // texture coords
-	//	wt,  ht, 0.0f,   1.0f, 0.0f, 0.0f,   u, v, // top right
-	//	wt, 0.0f, 0.0f,   0.0f, 1.0f, 0.0f,   u, 0.0f, // bottom right
-	//	0.0f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-	//	0.0f, ht, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, v  // top left 
-	//};
+	float wt = 64.0f, ht = 32.0f;
 
 	float vertices[] = {
 		//positions          // colors           // texture coords
-		wt/2, ht,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // top 
-		wt,   ht/2, 0.0f,   0.0f, 1.0f, 0.0f,   u, 0.0f, // right
-		0.0f, ht/2, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, v, // left
-		wt/2, 0.0f, 0.0f,   1.0f, 1.0f, 0.0f,   u, v  // down
+		wt/2, ht,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f, v, // top 
+		wt,   ht/2, 0.0f,   0.0f, 1.0f, 0.0f,   u, v, // right
+		0.0f, ht/2, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // left
+		wt/2, 0.0f, 0.0f,   1.0f, 1.0f, 0.0f,   u, 0.0f  // down
 	};
 
 	unsigned int indices[] = {
@@ -257,9 +301,6 @@ void SceneManager::setupScene()
 	// texture coord attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
-
-	setupTexture();
-
 }
 
 void SceneManager::setupCamera2D()
@@ -283,7 +324,7 @@ void SceneManager::setupCamera2D()
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
 }
 
-void SceneManager::setupTexture()
+void SceneManager::setupTexture(int textura)
 {
 
 	// load and create a texture 
@@ -296,14 +337,15 @@ void SceneManager::setupTexture()
 	// set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	// load image, create texture and generate mipmaps
+	
 	int width, height, nrChannels;
-	
-	unsigned char *data = stbi_load("../textures/tileset.png", &width, &height, &nrChannels, 0);
-	
-	cout << "Nro de canais: " << nrChannels << endl;
-	cout << "largura x altura: " << width << " x " << height << endl;
+
+	unsigned char *data;
+
+	if(textura == 1)
+		data = stbi_load("../textures/tileset.png", &width, &height, &nrChannels, 0);
+	else
+		data = stbi_load("../textures/sprite.png", &width, &height, &nrChannels, 0);
 
 	if (data)
 	{
