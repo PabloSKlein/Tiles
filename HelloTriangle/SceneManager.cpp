@@ -6,10 +6,20 @@
 static bool keys[1024];
 static bool resized;
 static GLuint width, height;
-int mapa[6][6];
 // load image, create texture and generate mipmaps
-float x;
-float y;
+float x = 400.0f;
+float y = 132.0f;
+float TamanhoMapaX = 9 , TamanhoMapaY = 9;
+float uTextureTile = 1.0 / 8.0, vTextureTile = 1.0 / 2.0;
+float uTexturePlayer = 1.0 / 8.0, vTexturePlayer = 1.0 / 2.0;
+float wtTile = 64.0f, htTile = 32.0f;
+float wtPlayer = 64.0f, htPlayer = 32.0f;
+int mapa[10][10];
+float mapX = wtTile * TamanhoMapaX;
+float mapY = htTile * TamanhoMapaX;
+float xo = 400.0f;
+float yo = 100.0f;
+
 
 SceneManager::SceneManager()
 {
@@ -30,9 +40,9 @@ void SceneManager::initialize(GLuint w, GLuint h)
 	}
 	else {
 
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < TamanhoMapaX; i++)
 		{
-			for (int j = 0; j < 6; j++)
+			for (int j = 0; j < TamanhoMapaY; j++)
 			{
 				file >> mapa[i][j];
 				cout << mapa[i][j];
@@ -113,7 +123,7 @@ void SceneManager::do_movement()
 {
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwSetWindowShouldClose(window, GL_TRUE);
-
+	
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		y -= 10.00f;
 	}else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
@@ -138,18 +148,15 @@ void SceneManager::renderBackGround()
 	shader->Use();
 
 	float xi = 0.0, yi = 0.0;
-	float xo = 400.0f;
-	for (int i = 0; i < 6; i++)
+	for (int i = 0; i < TamanhoMapaX; i++)
 	{	
-		for (int j = 0; j < 6; j++)
+		for (int j = 0; j < TamanhoMapaY; j++)
 		{
 			// Create transformations 
 			model = glm::mat4();
-			//model = glm::rotate(model, (GLfloat)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-			//model = glm::translate(model, glm::vec3(xi+j*32,yi+i*32,0.0));
 
-			xi = ((i - j) * 64.0f / 2.0f) + xo;
-			yi = (i + j) * 32.0f / 2.0f;
+			xi = ((i - j) * wtTile / 2.0f) + xo;
+			yi = ((i + j) * htTile / 2.0f) + yo;
 
 			model = glm::translate(model, glm::vec3(xi, yi, 0.0));
 
@@ -263,16 +270,12 @@ void SceneManager::finish()
 
 void SceneManager::setupScene()
 {
-	float u = 1.0 / 8.0, v = 1.0/2.0;
-
-	float wt = 64.0f, ht = 32.0f;
-
 	float vertices[] = {
 		//positions          // colors           // texture coords
-		wt/2, ht,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f, v, // top 
-		wt,   ht/2, 0.0f,   0.0f, 1.0f, 0.0f,   u, v, // right
-		0.0f, ht/2, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // left
-		wt/2, 0.0f, 0.0f,   1.0f, 1.0f, 0.0f,   u, 0.0f  // down
+		wtTile/2, htTile,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f, vTextureTile, // top 
+		wtTile,   htTile/2, 0.0f,   0.0f, 1.0f, 0.0f,   uTextureTile, vTextureTile, // right
+		0.0f, htTile/2, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // left
+		wtTile/2, 0.0f, 0.0f,   1.0f, 1.0f, 0.0f,   uTextureTile, 0.0f  // down
 	};
 
 	unsigned int indices[] = {
