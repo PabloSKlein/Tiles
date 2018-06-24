@@ -1,0 +1,9 @@
+#v15/
+#*.ipch
+#ipch/
+#.vs/
+
+# #[Dd]ebug/
+#Jogo/Debug/
+#Debug/
+

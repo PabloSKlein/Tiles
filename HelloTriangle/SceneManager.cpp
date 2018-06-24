@@ -7,18 +7,21 @@ static bool keys[1024];
 static bool resized;
 static GLuint width, height;
 // load image, create texture and generate mipmaps
-float x = 400.0f;
+float x = 500.0f;
 float y = 132.0f;
 float TamanhoMapaX = 10 , TamanhoMapaY = 10;
 float uTextureTile = 1.0f / 11.0f, vTextureTile = 1.0f / 11.0f;
-float uTexturePlayer = 1.0f / 8.0f, vTexturePlayer = 1.0f / 2.0f;
+float uTexturePlayer = 1.0f / 14.0f, vTexturePlayer = 1.0f / 10.0f;
 float wtTile = 80.0f, htTile = 40.0f;
-float wtPlayer = 80.0f, htPlayer = 40.0f;
+float wtPlayer = 100.0f, htPlayer = 50.0f;
 int mapa[10][10];
 float mapX = wtTile * TamanhoMapaX;
 float mapY = htTile * TamanhoMapaX;
-float xo = 400.0f;
+float xo = 500.0f;
 float yo = 100.0f;
+float offsetMovimentacaoPlayer = 20.0f;
+float offsetXTexturaPlayer = 0.0f;
+float offsetYTexturaPlayer = 0.0f;
 
 
 SceneManager::SceneManager()
@@ -82,10 +85,8 @@ void SceneManager::initializeGraphics()
 	addShader("../shaders/transformations.vs", "../shaders/transformations.frag");
 
 	//setup the scene -- LEMBRANDO QUE A DESCRIÇÃO DE UMA CENA PODE VIR DE ARQUIVO(S) DE 
-	// CONFIGURAÇÃO
+	// CONFIGURAÇÃO	
 	setupScene();
-
-	//setupPlayer();
 
 	resized = true; //para entrar no setup da câmera na 1a vez
 
@@ -125,15 +126,52 @@ void SceneManager::do_movement()
 {
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwSetWindowShouldClose(window, GL_TRUE);
-	
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		y -= 10.00f;
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		y -= offsetMovimentacaoPlayer;
+
+		offsetXTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		x -= offsetMovimentacaoPlayer;
+
+		offsetXTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		x -= (offsetMovimentacaoPlayer);
+		y -= (offsetMovimentacaoPlayer/2);
+
+		offsetXTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		x += offsetMovimentacaoPlayer;
+
+		offsetXTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		y += offsetMovimentacaoPlayer;
 	}else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		y += 10.00f;
+		x += offsetMovimentacaoPlayer;
+		y += offsetMovimentacaoPlayer/2;
+
+		offsetXTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 0.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		x -= 10.00f;
+		x -= offsetMovimentacaoPlayer;
+		y += offsetMovimentacaoPlayer/2;
+
+		offsetXTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 0.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		x += 10.00f;
+		x += offsetMovimentacaoPlayer;
+		y -= offsetMovimentacaoPlayer/2;
+
+		offsetXTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 0.0f;
 	}
 }
 
@@ -257,9 +295,12 @@ void SceneManager::run()
 		//Update method(s)
 		do_movement();
 
-		//Render scene
+		//Render Scene
+		setupScene();
 		renderBackGround();
 
+		//Render Player
+		setupPlayer();
 		renderPlayer();
 		
 		// Swap the screen buffers
@@ -315,11 +356,11 @@ void SceneManager::setupScene()
 void SceneManager::setupPlayer()
 {
 	float vertices[] = {
-		//positions                 // colors           // texture coords
-		wtPlayer / 2, htPlayer,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f,         vTexturePlayer, // top 
-		wtPlayer,   htPlayer / 2, 0.0f,   0.0f, 1.0f, 0.0f,   uTexturePlayer, vTexturePlayer, // right
-		0.0f,	  htPlayer / 2, 0.0f,   0.0f, 0.0f, 1.0f,	  0.0f,         0.0f, // left
-		wtPlayer / 2, 0.0f,     0.0f,   1.0f, 1.0f, 0.0f,	  uTexturePlayer, 0.0f  // down
+		//positions                 // colors               // texture coords
+		wtPlayer / 2, htPlayer,     0.0f, 1.0f, 0.0f, 0.0f, 0.0f,           vTexturePlayer, // top 
+		wtPlayer,     htPlayer / 2, 0.0f, 0.0f, 1.0f, 0.0f, uTexturePlayer, vTexturePlayer, // right
+		0.0f,	      htPlayer / 2, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,           0.0f, // left
+		wtPlayer / 2, 0.0f,         0.0f, 1.0f, 1.0f, 0.0f,	uTexturePlayer, 0.0f  // down
 	};
 
 	unsigned int indices[] = {
@@ -348,6 +389,12 @@ void SceneManager::setupPlayer()
 	// texture coord attribute
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+}
+
+void SceneManager::InitScene()
+{
+	setupScene();
+	renderBackGround();
 }
 
 void SceneManager::setupCamera2D()
@@ -392,23 +439,23 @@ void SceneManager::setupTexture(int textura)
 	if(textura == 1)
 		data = stbi_load("../textures/tileset.png", &width, &height, &nrChannels, 0);
 	else
-		data = stbi_load("../textures/sprite.png", &width, &height, &nrChannels, 0);
+		data = stbi_load("../textures/cowboy.png", &width, &height, &nrChannels, 0);
 	
-		if (data)
-		{
-			if (textura == 1) {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-				glGenerateMipmap(GL_TEXTURE_2D);
-			}
-			else {
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-				glGenerateMipmap(GL_TEXTURE_2D);
-			}
+	if (data)
+	{
+		if (textura == 1) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
 		}
-		else
-		{
-			std::cout << "Failed to load texture" << std::endl;
+		else {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
 		}
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
 	stbi_image_free(data);
 
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.

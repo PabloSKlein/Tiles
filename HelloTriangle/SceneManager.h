@@ -32,6 +32,7 @@ public:
 	// scene
 	void setupScene();
 	void setupPlayer();
+	void InitScene();
 	void setupCamera2D();
 	void setupTexture(int textura); //apenas mostra como criar uma textura
 private:
