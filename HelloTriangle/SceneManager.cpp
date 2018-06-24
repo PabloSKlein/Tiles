@@ -9,11 +9,11 @@ static GLuint width, height;
 // load image, create texture and generate mipmaps
 float x = 400.0f;
 float y = 132.0f;
-float TamanhoMapaX = 9 , TamanhoMapaY = 9;
-float uTextureTile = 1.0 / 8.0, vTextureTile = 1.0 / 2.0;
-float uTexturePlayer = 1.0 / 8.0, vTexturePlayer = 1.0 / 2.0;
-float wtTile = 64.0f, htTile = 32.0f;
-float wtPlayer = 64.0f, htPlayer = 32.0f;
+float TamanhoMapaX = 10 , TamanhoMapaY = 10;
+float uTextureTile = 1.0f / 11.0f, vTextureTile = 1.0f / 11.0f;
+float uTexturePlayer = 1.0f / 8.0f, vTexturePlayer = 1.0f / 2.0f;
+float wtTile = 80.0f, htTile = 40.0f;
+float wtPlayer = 80.0f, htPlayer = 40.0f;
 int mapa[10][10];
 float mapX = wtTile * TamanhoMapaX;
 float mapY = htTile * TamanhoMapaX;
@@ -84,6 +84,8 @@ void SceneManager::initializeGraphics()
 	//setup the scene -- LEMBRANDO QUE A DESCRIÇÃO DE UMA CENA PODE VIR DE ARQUIVO(S) DE 
 	// CONFIGURAÇÃO
 	setupScene();
+
+	//setupPlayer();
 
 	resized = true; //para entrar no setup da câmera na 1a vez
 
@@ -169,15 +171,19 @@ void SceneManager::renderBackGround()
 			GLint offsetLoc = glGetUniformLocation(shader->Program, "offsetUV");
 			GLfloat TexX = 0.0f;
 			GLfloat TexY = 0.0f;
-
-			if (mapa[i][j] > 7) {
-				TexY = 0.5f;
-				TexX = (mapa[i][j] / 8.0f) - 1;
+			if (mapa[i][j] > 20) {
+				TexY = 2.0f / 11.0f;
+				TexX = (mapa[i][j] / 11.0f) - 2;
+			}
+			else if(mapa[i][j] > 10) {
+				TexY = 1.0f / 11.0f;
+				TexX = (mapa[i][j] / 11.0f) - 1;
 			}
 			else {
 				TexY = 0.0f;
-				TexX = mapa[i][j] * (1.0f / 8.0f);
+				TexX = mapa[i][j] * (1.0f / 11.0f);
 			}
+
 
 			glm::vec2 offset(TexX, TexY);
 			glUniform2f(offsetLoc, offset.x, offset.y);
@@ -271,16 +277,54 @@ void SceneManager::finish()
 void SceneManager::setupScene()
 {
 	float vertices[] = {
-		//positions          // colors           // texture coords
-		wtTile/2, htTile,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f, vTextureTile, // top 
+		//positions                 // colors           // texture coords
+		wtTile/2, htTile,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f,         vTextureTile, // top 
 		wtTile,   htTile/2, 0.0f,   0.0f, 1.0f, 0.0f,   uTextureTile, vTextureTile, // right
-		0.0f, htTile/2, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // left
-		wtTile/2, 0.0f, 0.0f,   1.0f, 1.0f, 0.0f,   uTextureTile, 0.0f  // down
+		0.0f,	  htTile/2, 0.0f,   0.0f, 0.0f, 1.0f,	0.0f,         0.0f, // left
+		wtTile/2, 0.0f,     0.0f,   1.0f, 1.0f, 0.0f,	uTextureTile, 0.0f  // down
 	};
 
 	unsigned int indices[] = {
 		0, 1, 2, // first triangle
-		1, 2, 3  // second triangle
+		3, 1, 2  // second triangle
+	};
+	unsigned int VBO, EBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	// texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+}
+
+void SceneManager::setupPlayer()
+{
+	float vertices[] = {
+		//positions                 // colors           // texture coords
+		wtPlayer / 2, htPlayer,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f,         vTexturePlayer, // top 
+		wtPlayer,   htPlayer / 2, 0.0f,   0.0f, 1.0f, 0.0f,   uTexturePlayer, vTexturePlayer, // right
+		0.0f,	  htPlayer / 2, 0.0f,   0.0f, 0.0f, 1.0f,	  0.0f,         0.0f, // left
+		wtPlayer / 2, 0.0f,     0.0f,   1.0f, 1.0f, 0.0f,	  uTexturePlayer, 0.0f  // down
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2, // first triangle
+		3, 1, 2  // second triangle
 	};
 	unsigned int VBO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -349,17 +393,22 @@ void SceneManager::setupTexture(int textura)
 		data = stbi_load("../textures/tileset.png", &width, &height, &nrChannels, 0);
 	else
 		data = stbi_load("../textures/sprite.png", &width, &height, &nrChannels, 0);
-
-	if (data)
-	{
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-	}
-	else
-	{
-		std::cout << "Failed to load texture" << std::endl;
-	}
+	
+		if (data)
+		{
+			if (textura == 1) {
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+			else {
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+		}
+		else
+		{
+			std::cout << "Failed to load texture" << std::endl;
+		}
 	stbi_image_free(data);
 
 	glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture when done, so we won't accidentily mess up our texture.
