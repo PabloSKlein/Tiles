@@ -1,5 +1,5 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HelloTriangle.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  SceneManager.cpp
+  Player.cpp
 glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw.pdb' nÒo foi encontrado 'glfw3.lib(context.obj)' ou no 'C:\Users\pablo\Projetos\NewTiles\Tiles\Debug\glfw.pdb'; vinculando objeto quando quando sem nenhuma informaþÒo de depuraþÒo
 glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw.pdb' nÒo foi encontrado 'glfw3.lib(init.obj)' ou no 'C:\Users\pablo\Projetos\NewTiles\Tiles\Debug\glfw.pdb'; vinculando objeto quando quando sem nenhuma informaþÒo de depuraþÒo
 glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw.pdb' nÒo foi encontrado 'glfw3.lib(input.obj)' ou no 'C:\Users\pablo\Projetos\NewTiles\Tiles\Debug\glfw.pdb'; vinculando objeto quando quando sem nenhuma informaþÒo de depuraþÒo

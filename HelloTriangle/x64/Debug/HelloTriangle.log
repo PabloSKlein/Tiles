@@ -1,0 +1,2 @@
+﻿  glad.c
+c:\users\pablo\projetos\newtiles\tiles\hellotriangle\glad.c(24): fatal error C1083: Não é possível abrir arquivo incluir: 'glad/glad.h': No such file or directory

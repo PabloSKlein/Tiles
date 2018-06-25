@@ -13,16 +13,17 @@ float TamanhoMapaX = 10 , TamanhoMapaY = 10;
 float uTextureTile = 1.0f / 11.0f, vTextureTile = 1.0f / 11.0f;
 float uTexturePlayer = 1.0f / 14.0f, vTexturePlayer = 1.0f / 10.0f;
 float wtTile = 80.0f, htTile = 40.0f;
-float wtPlayer = 100.0f, htPlayer = 50.0f;
+float wtPlayer = 160.0f, htPlayer = 80.0f;
 int mapa[10][10];
 float mapX = wtTile * TamanhoMapaX;
 float mapY = htTile * TamanhoMapaX;
 float xo = 500.0f;
 float yo = 100.0f;
-float offsetMovimentacaoPlayer = 20.0f;
+float offsetMovimentacaoPlayer = 40.0f;
 float offsetXTexturaPlayer = 0.0f;
 float offsetYTexturaPlayer = 0.0f;
-
+int gabiarraDoMovimentoAnterior;
+/*0 - w , 1 - w+a, 2 - w+d,  3 - s, 4 - s+a, 5 - s+d, 6 - a - 7 - d */
 
 SceneManager::SceneManager()
 {
@@ -124,54 +125,80 @@ void SceneManager::resize(GLFWwindow * window, int w, int h)
 
 void SceneManager::do_movement()
 {
+	int gabiarraDoMovimento = 0;
+
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwSetWindowShouldClose(window, GL_TRUE);
-
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		y -= offsetMovimentacaoPlayer;
 
-		offsetXTexturaPlayer = 0.0f;
-		offsetYTexturaPlayer = 0.0f;
+		gabiarraDoMovimento = 2;
+
+		offsetYTexturaPlayer = 4.0f / 10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		x -= offsetMovimentacaoPlayer;
 
-		offsetXTexturaPlayer = 0.0f;
-		offsetYTexturaPlayer = 0.0f;
+		gabiarraDoMovimento = 1;
+
+		offsetYTexturaPlayer = 6.0f / 10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		x -= (offsetMovimentacaoPlayer);
 		y -= (offsetMovimentacaoPlayer/2);
 
-		offsetXTexturaPlayer = 0.0f;
-		offsetYTexturaPlayer = 0.0f;
+		gabiarraDoMovimento = 8;
+
+		offsetYTexturaPlayer = 5.0f/10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		x += offsetMovimentacaoPlayer;
 
-		offsetXTexturaPlayer = 0.0f;
-		offsetYTexturaPlayer = 0.0f;
+		gabiarraDoMovimento = 5;
+
+		offsetYTexturaPlayer = 2.0f / 10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		y += offsetMovimentacaoPlayer;
+
+		gabiarraDoMovimento = 4;
+
+		offsetYTexturaPlayer = 8.0f / 10.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		x += offsetMovimentacaoPlayer;
 		y += offsetMovimentacaoPlayer/2;
 
-		offsetXTexturaPlayer = 0.0f;
-		offsetYTexturaPlayer = 0.0f;
+		gabiarraDoMovimento = 3;
+
+		offsetYTexturaPlayer = 9.0f/10.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		x -= offsetMovimentacaoPlayer;
 		y += offsetMovimentacaoPlayer/2;
 
-		offsetXTexturaPlayer = 0.0f;
-		offsetYTexturaPlayer = 0.0f;
+		gabiarraDoMovimento = 6;
+
+		offsetYTexturaPlayer = 1.0f / 10.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		x += offsetMovimentacaoPlayer;
 		y -= offsetMovimentacaoPlayer/2;
 
-		offsetXTexturaPlayer = 0.0f;
+		gabiarraDoMovimento = 7;
+
 		offsetYTexturaPlayer = 0.0f;
+	}
+	
+	if (gabiarraDoMovimento != 0) {
+		/*8 - w , 1 - w+a, 2 - w+d,  3 - s, 4 - s+a, 5 - s+d, 6 - a - 7 - d */
+		if (gabiarraDoMovimento != gabiarraDoMovimentoAnterior)
+			offsetXTexturaPlayer = 0.0f;
+		else {//9
+			if (offsetXTexturaPlayer == 14.0f)
+				offsetXTexturaPlayer = 0.0f;
+			else {
+				offsetXTexturaPlayer += 1.0f / 14.0f;
+				gabiarraDoMovimentoAnterior = gabiarraDoMovimento;
+			}
+		}
 	}
 }
 
@@ -262,7 +289,7 @@ void SceneManager::renderPlayer()
 	GLint offsetLoc = glGetUniformLocation(shader->Program, "offsetUV");
 
 	glm::vec4 vec(1.0f, 1.0f, 0.0f, 1.0f);
-	glm::vec2 offset(0, 0);
+	glm::vec2 offset(offsetXTexturaPlayer, offsetYTexturaPlayer);
 	glUniform2f(offsetLoc, offset.x, offset.y);
 
 	if (resized) //se houve redimensionamento na janela, redefine a projection matrix
@@ -285,6 +312,9 @@ void SceneManager::renderPlayer()
 
 void SceneManager::run()
 {
+	//Render Scene
+	setupScene();
+
 	//GAME LOOP
 	while (!glfwWindowShouldClose(window))
 	{
@@ -294,8 +324,6 @@ void SceneManager::run()
 
 		//Update method(s)
 		do_movement();
-
-		//Render Scene
 		setupScene();
 		renderBackGround();
 
