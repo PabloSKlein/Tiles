@@ -87,7 +87,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\pablo\Projetos\NewTiles\dependencies\GLFW-3.1.2-lib\include;../dependencies/GLAD/include;../dependencies/SOIL/include;../dependencies/GLFW-3.1.2-lib/include;../dependencies/GLEW-2.0.0-lib/include;C:\Users\pablo\Projetos\NewTiles\dependencies\GLAD\include;C:\Users\pablo\Projetos\NewTiles\dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Users\pablo\Projetos\NewTiles\dependencies\SOIL\lib;C:\Users\pablo\Projetos\NewTiles\dependencies\GLFW-3.1.2-lib\lib;../dependencies/SOIL/lib;../dependencies/GLFW-3.1.2-lib/lib;C:\Users\pablo\Projetos\NewTiles\dependencies\GLEW-2.0.0-lib\lib;C:\Users\pablo\Projetos\NewTiles\dependencies\GLEW-2.0.0-lib\include;C:\Users\pablo\Projetos\NewTiles\dependencies\GLEW-2.0.0-lib\include\GL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;glfw3.lib;SOIL.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

@@ -1,2 +1,15 @@
-﻿  glad.c
-c:\users\pablo\projetos\newtiles\tiles\hellotriangle\glad.c(24): fatal error C1083: Não é possível abrir arquivo incluir: 'glad/glad.h': No such file or directory
+﻿SceneManager.obj : error LNK2019: símbolo externo indefinido glfwInit referenciado na função "public: void __cdecl SceneManager::initializeGraphics(void)" (?initializeGraphics@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwTerminate referenciado na função "public: void __cdecl SceneManager::finish(void)" (?finish@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwCreateWindow referenciado na função "public: void __cdecl SceneManager::initializeGraphics(void)" (?initializeGraphics@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwWindowShouldClose referenciado na função "public: void __cdecl SceneManager::run(void)" (?run@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwSetWindowShouldClose referenciado na função "public: void __cdecl SceneManager::do_movement(void)" (?do_movement@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwSetWindowSizeCallback referenciado na função "public: void __cdecl SceneManager::initializeGraphics(void)" (?initializeGraphics@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwPollEvents referenciado na função "public: void __cdecl SceneManager::run(void)" (?run@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwGetKey referenciado na função "public: void __cdecl SceneManager::do_movement(void)" (?do_movement@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwSetKeyCallback referenciado na função "public: void __cdecl SceneManager::initializeGraphics(void)" (?initializeGraphics@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwMakeContextCurrent referenciado na função "public: void __cdecl SceneManager::initializeGraphics(void)" (?initializeGraphics@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwSwapBuffers referenciado na função "public: void __cdecl SceneManager::run(void)" (?run@SceneManager@@QEAAXXZ)
+SceneManager.obj : error LNK2019: símbolo externo indefinido glfwGetProcAddress referenciado na função "public: void __cdecl SceneManager::initializeGraphics(void)" (?initializeGraphics@SceneManager@@QEAAXXZ)
+C:\Users\pablo\Projetos\NewTiles\dependencies\GLFW-3.1.2-lib\lib\glfw3.lib : warning LNK4272: o tipo de máquina da biblioteca 'x86' está em conflito com o tipo de máquina de destino 'x64'
+C:\Users\pablo\Projetos\NewTiles\dependencies\SOIL\lib\SOIL.lib : warning LNK4272: o tipo de máquina da biblioteca 'x86' está em conflito com o tipo de máquina de destino 'x64'
+C:\Users\pablo\Projetos\NewTiles\Tiles\x64\Debug\Transforms.exe : fatal error LNK1120: 12 externo não resolvidos
