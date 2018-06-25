@@ -75,10 +75,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../dependencies/GLAD/include;../../dependencies/GLFW-3.1.2-lib/include;../../dependencies/GLEW-2.0.0-lib/include;../../dependencies/glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../dependencies/GLAD/include;../dependencies/GLFW-3.1.2-lib/include;../dependencies/GLEW-2.0.0-lib/include;../dependencies/glm</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>../../dependencies/GLFW-3.1.2-lib/lib;../../dependencies/GLEW-2.0.0-lib/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../dependencies/GLFW-3.1.2-lib/lib;../dependencies/GLEW-2.0.0-lib/lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
