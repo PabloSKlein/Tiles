@@ -19,7 +19,7 @@ float mapX = wtTile * TamanhoMapaX;
 float mapY = htTile * TamanhoMapaX;
 float xo = 500.0f;
 float yo = 100.0f;
-float offsetMovimentacaoPlayer = 40.0f;
+float offsetMovimentacaoPlayer = 30.0f;
 float offsetXTexturaPlayer = 0.0f;
 float offsetYTexturaPlayer = 0.0f;
 int gabiarraDoMovimentoAnterior;
@@ -134,14 +134,14 @@ void SceneManager::do_movement()
 
 		gabiarraDoMovimento = 2;
 
-		offsetYTexturaPlayer = 4.0f / 10.0f;
+		offsetYTexturaPlayer = 5.0f / 10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		x -= offsetMovimentacaoPlayer;
 
 		gabiarraDoMovimento = 1;
 
-		offsetYTexturaPlayer = 6.0f / 10.0f;
+		offsetYTexturaPlayer = 7.0f / 10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		x -= (offsetMovimentacaoPlayer);
@@ -149,56 +149,60 @@ void SceneManager::do_movement()
 
 		gabiarraDoMovimento = 8;
 
-		offsetYTexturaPlayer = 5.0f/10.0f;
+		offsetYTexturaPlayer = 6.0f/10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		x += offsetMovimentacaoPlayer;
 
 		gabiarraDoMovimento = 5;
 
-		offsetYTexturaPlayer = 2.0f / 10.0f;
+		offsetYTexturaPlayer = 3.0f / 10.0f;
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		y += offsetMovimentacaoPlayer;
 
 		gabiarraDoMovimento = 4;
 
-		offsetYTexturaPlayer = 8.0f / 10.0f;
+		offsetYTexturaPlayer = 9.0f / 10.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		x += offsetMovimentacaoPlayer;
 		y += offsetMovimentacaoPlayer/2;
 
 		gabiarraDoMovimento = 3;
 
-		offsetYTexturaPlayer = 9.0f/10.0f;
+		offsetYTexturaPlayer = 2.0f/10.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		x -= offsetMovimentacaoPlayer;
 		y += offsetMovimentacaoPlayer/2;
 
 		gabiarraDoMovimento = 6;
 
-		offsetYTexturaPlayer = 1.0f / 10.0f;
+		offsetYTexturaPlayer = 8.0f / 10.0f;
 	}else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		x += offsetMovimentacaoPlayer;
 		y -= offsetMovimentacaoPlayer/2;
 
 		gabiarraDoMovimento = 7;
 
-		offsetYTexturaPlayer = 0.0f;
+		offsetYTexturaPlayer = 4.0f / 10.0f;
 	}
 	
 	if (gabiarraDoMovimento != 0) {
 		/*8 - w , 1 - w+a, 2 - w+d,  3 - s, 4 - s+a, 5 - s+d, 6 - a - 7 - d */
-		if (gabiarraDoMovimento != gabiarraDoMovimentoAnterior)
+		if (gabiarraDoMovimento != gabiarraDoMovimentoAnterior) {
 			offsetXTexturaPlayer = 0.0f;
+			gabiarraDoMovimentoAnterior = gabiarraDoMovimento;
+		}
 		else {//9
 			if (offsetXTexturaPlayer == 14.0f)
 				offsetXTexturaPlayer = 0.0f;
 			else {
 				offsetXTexturaPlayer += 1.0f / 14.0f;
-				gabiarraDoMovimentoAnterior = gabiarraDoMovimento;
 			}
 		}
+	}
+	else {
+		offsetXTexturaPlayer = 0.0f;
 	}
 }
 
@@ -288,7 +292,6 @@ void SceneManager::renderPlayer()
 
 	GLint offsetLoc = glGetUniformLocation(shader->Program, "offsetUV");
 
-	glm::vec4 vec(1.0f, 1.0f, 0.0f, 1.0f);
 	glm::vec2 offset(offsetXTexturaPlayer, offsetYTexturaPlayer);
 	glUniform2f(offsetLoc, offset.x, offset.y);
 
@@ -384,17 +387,18 @@ void SceneManager::setupScene()
 void SceneManager::setupPlayer()
 {
 	float vertices[] = {
-		//positions                 // colors               // texture coords
-		wtPlayer / 2, htPlayer,     0.0f, 1.0f, 0.0f, 0.0f, 0.0f,           vTexturePlayer, // top 
-		wtPlayer,     htPlayer / 2, 0.0f, 0.0f, 1.0f, 0.0f, uTexturePlayer, vTexturePlayer, // right
-		0.0f,	      htPlayer / 2, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,           0.0f, // left
-		wtPlayer / 2, 0.0f,         0.0f, 1.0f, 1.0f, 0.0f,	uTexturePlayer, 0.0f  // down
+		// positions          // colors           // texture coords
+		wtPlayer,  htPlayer, 0.0f,   1.0f, 0.0f, 0.0f,   uTexturePlayer, vTexturePlayer, // top right
+		wtPlayer,  0.0f,     0.0f,   0.0f, 1.0f, 0.0f,   uTexturePlayer, 0.0f, // bottom right
+		0.0f,      0.0f,     0.0f,   0.0f, 0.0f, 1.0f,   0.0f,           0.0f, // bottom left
+		0.0f,      htPlayer, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f,           vTexturePlayer  // top left 
 	};
 
 	unsigned int indices[] = {
-		0, 1, 2, // first triangle
-		3, 1, 2  // second triangle
+		0, 1, 3, // first triangle
+		1, 2, 3  // second triangle
 	};
+
 	unsigned int VBO, EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
