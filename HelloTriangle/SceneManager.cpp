@@ -6,24 +6,37 @@
 static bool keys[1024];
 static bool resized;
 static GLuint width, height;
+
+//geracao de mapa com as posicoes de cada tile de acordo com o txt
+int mapa[10][10];
+float tamanhoMapaX = 10, tamanhoMapaY = 10;
+
+//player
+float posicaoPlayerTelaX = 460.0f; 
+float posicaoPlayerTelaY = 50.0f; //132
+int posicaoPlayerMapaX = 0;
+int posicaoPlayerMapaY = 0;
+int posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+int posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
+
+//textura do player
+float offsetMovimentacaoPlayer = 40.0f; //40
+float offsetXTexturaPlayer = 0.0f;
+float offsetYTexturaPlayer = 0.0f;
+int posicaoAnteriorTexturaSpritesheetPlayer;
+/*0 - w , 1 - w+a, 2 - w+d,  3 - s, 4 - s+a, 5 - s+d, 6 - a - 7 - d */
+
 // load image, create texture and generate mipmaps
-float x = 500.0f;
-float y = 132.0f;
-float TamanhoMapaX = 10 , TamanhoMapaY = 10;
 float uTextureTile = 1.0f / 11.0f, vTextureTile = 1.0f / 11.0f;
 float uTexturePlayer = 1.0f / 14.0f, vTexturePlayer = 1.0f / 10.0f;
 float wtTile = 80.0f, htTile = 40.0f;
 float wtPlayer = 160.0f, htPlayer = 80.0f;
-int mapa[10][10];
-float mapX = wtTile * TamanhoMapaX;
-float mapY = htTile * TamanhoMapaX;
+
+float mapX = wtTile * tamanhoMapaX;
+float mapY = htTile * tamanhoMapaX;
 float xo = 500.0f;
 float yo = 100.0f;
-float offsetMovimentacaoPlayer = 30.0f;
-float offsetXTexturaPlayer = 0.0f;
-float offsetYTexturaPlayer = 0.0f;
-int gabiarraDoMovimentoAnterior;
-/*0 - w , 1 - w+a, 2 - w+d,  3 - s, 4 - s+a, 5 - s+d, 6 - a - 7 - d */
+
 
 SceneManager::SceneManager()
 {
@@ -44,9 +57,9 @@ void SceneManager::initialize(GLuint w, GLuint h)
 	}
 	else {
 
-		for (int i = 0; i < TamanhoMapaX; i++)
+		for (int i = 0; i < tamanhoMapaX; i++)
 		{
-			for (int j = 0; j < TamanhoMapaY; j++)
+			for (int j = 0; j < tamanhoMapaY; j++)
 			{
 				file >> mapa[i][j];
 				cout << mapa[i][j];
@@ -122,76 +135,196 @@ void SceneManager::resize(GLFWwindow * window, int w, int h)
 	glViewport(0, 0, width, height);
 }
 
+bool SceneManager::check_colision(int posicaoPlayerMapaYCheck, int posicaoPlayerMapaXCheck){
+
+	//para que o player nao saia do cenario
+	if (posicaoPlayerMapaYCheck < 0) {
+		posicaoPlayerMapaY++;
+		return false;
+	}
+	if (posicaoPlayerMapaXCheck < 0) {
+		posicaoPlayerMapaX++;
+		return false;
+	}
+	if (posicaoPlayerMapaYCheck > 9) {
+		posicaoPlayerMapaY--;
+		return false;
+	}
+	if (posicaoPlayerMapaXCheck > 9) {
+		posicaoPlayerMapaX--;
+		return false;
+	}
+
+	//se o boneco quiser andar para o tile 7 que é a pedra não vai conseguir
+	if (mapa[posicaoPlayerMapaYCheck][posicaoPlayerMapaXCheck] == 7) {
+
+		posicaoPlayerMapaX = posicaoAnteriorPlayerMapaX;
+		posicaoPlayerMapaY = posicaoAnteriorPlayerMapaY;
+
+		return false;
+	}
+
+	return true;
+	
+}
 
 void SceneManager::do_movement()
 {
-	int gabiarraDoMovimento = 0;
+	int posicaoTexturaSpritesheetPlayer = 0;
 
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		y -= offsetMovimentacaoPlayer;
 
-		gabiarraDoMovimento = 2;
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
-		offsetYTexturaPlayer = 5.0f / 10.0f;
+		posicaoPlayerMapaX--;
+		posicaoPlayerMapaY--;
+
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)){
+
+			posicaoPlayerTelaY -= offsetMovimentacaoPlayer;
+
+			posicaoTexturaSpritesheetPlayer = 2;
+
+			offsetYTexturaPlayer = 5.0f / 10.0f;
+		}
+
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		x -= offsetMovimentacaoPlayer;
+		
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
-		gabiarraDoMovimento = 1;
+		posicaoPlayerMapaX--;
+		posicaoPlayerMapaY++;
 
-		offsetYTexturaPlayer = 7.0f / 10.0f;
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
+
+			posicaoPlayerTelaX -= offsetMovimentacaoPlayer;
+
+			posicaoTexturaSpritesheetPlayer = 1;
+
+			offsetYTexturaPlayer = 7.0f / 10.0f;
+
+		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		x -= (offsetMovimentacaoPlayer);
-		y -= (offsetMovimentacaoPlayer/2);
+		
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
-		gabiarraDoMovimento = 8;
+		posicaoPlayerMapaX--;
 
-		offsetYTexturaPlayer = 6.0f/10.0f;
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
+
+			posicaoPlayerTelaX -= (offsetMovimentacaoPlayer);
+			posicaoPlayerTelaY -= (offsetMovimentacaoPlayer / 2);
+
+			posicaoTexturaSpritesheetPlayer = 8;
+
+			offsetYTexturaPlayer = 6.0f / 10.0f;
+
+		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		x += offsetMovimentacaoPlayer;
+		
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
-		gabiarraDoMovimento = 5;
+		posicaoPlayerMapaX++;
+		posicaoPlayerMapaY--;
 
-		offsetYTexturaPlayer = 3.0f / 10.0f;
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
+
+			posicaoPlayerTelaX += offsetMovimentacaoPlayer;
+
+			posicaoTexturaSpritesheetPlayer = 5;
+
+			offsetYTexturaPlayer = 3.0f / 10.0f;
+
+		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		y += offsetMovimentacaoPlayer;
+		
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
-		gabiarraDoMovimento = 4;
+		posicaoPlayerMapaX++;
+		posicaoPlayerMapaY++;
 
-		offsetYTexturaPlayer = 9.0f / 10.0f;
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
+
+			posicaoPlayerTelaY += offsetMovimentacaoPlayer;
+
+			posicaoTexturaSpritesheetPlayer = 4;
+
+			offsetYTexturaPlayer = 9.0f / 10.0f;
+
+		}
+
 	}else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		x += offsetMovimentacaoPlayer;
-		y += offsetMovimentacaoPlayer/2;
 
-		gabiarraDoMovimento = 3;
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
-		offsetYTexturaPlayer = 2.0f/10.0f;
+		posicaoPlayerMapaX++;
+
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
+
+			posicaoPlayerTelaX += offsetMovimentacaoPlayer;
+			posicaoPlayerTelaY += offsetMovimentacaoPlayer / 2;
+
+			posicaoTexturaSpritesheetPlayer = 3;
+
+			offsetYTexturaPlayer = 2.0f / 10.0f;
+
+		}
+
 	}else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		x -= offsetMovimentacaoPlayer;
-		y += offsetMovimentacaoPlayer/2;
+		
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
-		gabiarraDoMovimento = 6;
+		posicaoPlayerMapaY++;
 
-		offsetYTexturaPlayer = 8.0f / 10.0f;
-	}else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		x += offsetMovimentacaoPlayer;
-		y -= offsetMovimentacaoPlayer/2;
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
 
-		gabiarraDoMovimento = 7;
+			posicaoPlayerTelaX -= offsetMovimentacaoPlayer;
+			posicaoPlayerTelaY += offsetMovimentacaoPlayer / 2;
 
-		offsetYTexturaPlayer = 4.0f / 10.0f;
+			posicaoTexturaSpritesheetPlayer = 6;
+
+			offsetYTexturaPlayer = 8.0f / 10.0f;
+
+		}
+
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+
+		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
+		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
+
+		posicaoPlayerMapaY--;
+
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
+
+			posicaoPlayerTelaX += offsetMovimentacaoPlayer;
+			posicaoPlayerTelaY -= offsetMovimentacaoPlayer / 2;
+
+			posicaoTexturaSpritesheetPlayer = 7;
+
+			offsetYTexturaPlayer = 4.0f / 10.0f;
+		}
+
 	}
 	
-	if (gabiarraDoMovimento != 0) {
+	if (posicaoTexturaSpritesheetPlayer != 0) {
 		/*8 - w , 1 - w+a, 2 - w+d,  3 - s, 4 - s+a, 5 - s+d, 6 - a - 7 - d */
-		if (gabiarraDoMovimento != gabiarraDoMovimentoAnterior) {
+		if (posicaoTexturaSpritesheetPlayer != posicaoAnteriorTexturaSpritesheetPlayer) {
 			offsetXTexturaPlayer = 0.0f;
-			gabiarraDoMovimentoAnterior = gabiarraDoMovimento;
+			posicaoAnteriorTexturaSpritesheetPlayer = posicaoTexturaSpritesheetPlayer;
 		}
 		else {//9
 			if (offsetXTexturaPlayer == 14.0f)
@@ -219,9 +352,9 @@ void SceneManager::renderBackGround()
 	shader->Use();
 
 	float xi = 0.0, yi = 0.0;
-	for (int i = 0; i < TamanhoMapaX; i++)
+	for (int i = 0; i < tamanhoMapaX; i++)
 	{	
-		for (int j = 0; j < TamanhoMapaY; j++)
+		for (int j = 0; j < tamanhoMapaY; j++)
 		{
 			// Create transformations 
 			model = glm::mat4();
@@ -282,7 +415,7 @@ void SceneManager::renderPlayer()
 	// Create transformations 
 	model = glm::mat4();
 
-	model = glm::translate(model, glm::vec3(x, y, 0.0));
+	model = glm::translate(model, glm::vec3(posicaoPlayerTelaX, posicaoPlayerTelaY, 0.0));
 
 	// Get their uniform location
 	GLint modelLoc = glGetUniformLocation(shader->Program, "model");

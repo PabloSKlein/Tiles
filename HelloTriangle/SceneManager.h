@@ -22,6 +22,7 @@ public:
 	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void resize(GLFWwindow* window, int width, int height);
 
+	bool check_colision(int posicaoPlayerMapaX, int posicaoPlayerMapaY);
 	void do_movement();
 	void renderBackGround();
 	void renderPlayer();
