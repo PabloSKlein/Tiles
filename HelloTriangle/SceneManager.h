@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <GLFW/glfw3.h>
 
 
 class SceneManager
@@ -36,9 +37,14 @@ public:
 	void InitScene();
 	void setupCamera2D();
 	void setupTexture(int textura); //apenas mostra como criar uma textura
+
+	static void mouseButtonCallback(GLFWwindow *window , int button, int action, int mods);
+
+
 private:
 	
-	//GFLW window
+	//GFLW 
+
 	GLFWwindow *window;
 
 	//our shader program

@@ -37,6 +37,11 @@ float mapY = htTile * tamanhoMapaX;
 float xo = 500.0f;
 float yo = 100.0f;
 
+//click mouse
+float clickMouseposicaoX = 0.0f;
+float clickMouseposicaoY = 0.0f;
+double xPos = 0, yPos = 0;
+
 
 SceneManager::SceneManager()
 {
@@ -81,11 +86,15 @@ void SceneManager::initializeGraphics()
 	window = glfwCreateWindow(width, height, "Hello Transform", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
 
+
+	glfwSetMouseButtonCallback(window, mouseButtonCallback);
+
 	// Set the required callback functions
 	glfwSetKeyCallback(window, key_callback);
 
 	//Setando a callback de redimensionamento da janela
 	glfwSetWindowSizeCallback(window, resize);
+
 	
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
@@ -175,6 +184,8 @@ void SceneManager::do_movement()
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+
+		
 
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
@@ -629,4 +640,14 @@ void SceneManager::setupTexture(int textura)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void SceneManager::mouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
+{
+	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+
+		glfwGetCursorPos(window, &xPos, &yPos);
+
+		std::cout << "Clique em: " << xPos << " : " << yPos << std::endl;
+	}
 }
