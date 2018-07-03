@@ -12,7 +12,7 @@ int mapa[10][10];
 float tamanhoMapaX = 10, tamanhoMapaY = 10;
 
 //player
-float posicaoPlayerTelaX = 460.0f; 
+float posicaoPlayerTelaX = 460.0f;
 float posicaoPlayerTelaY = 50.0f; //132
 int posicaoPlayerMapaX = 0;
 int posicaoPlayerMapaY = 0;
@@ -34,13 +34,12 @@ float wtPlayer = 160.0f, htPlayer = 80.0f;
 
 float mapX = wtTile * tamanhoMapaX;
 float mapY = htTile * tamanhoMapaX;
-float xo = 500.0f;
-float yo = 100.0f;
+float comecaMontagemCenarioX = 500.0f;
+float comecaMontagemCenarioY = 100.0f;
 
 //click mouse
-float clickMouseposicaoX = 0.0f;
-float clickMouseposicaoY = 0.0f;
-double xPos = 0, yPos = 0;
+double clickMousePosicaoX = 460, clickMousePosicaoY = 200;
+int posicaoTileMudarX = 0, posicaoTileMudarY = 0;
 
 
 SceneManager::SceneManager()
@@ -95,7 +94,7 @@ void SceneManager::initializeGraphics()
 	//Setando a callback de redimensionamento da janela
 	glfwSetWindowSizeCallback(window, resize);
 
-	
+
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -117,7 +116,7 @@ void SceneManager::initializeGraphics()
 
 void SceneManager::addShader(string vFilename, string fFilename)
 {
-	shader = new Shader (vFilename.c_str(), fFilename.c_str());
+	shader = new Shader(vFilename.c_str(), fFilename.c_str());
 }
 
 
@@ -144,7 +143,7 @@ void SceneManager::resize(GLFWwindow * window, int w, int h)
 	glViewport(0, 0, width, height);
 }
 
-bool SceneManager::check_colision(int posicaoPlayerMapaYCheck, int posicaoPlayerMapaXCheck){
+bool SceneManager::check_colision(int posicaoPlayerMapaYCheck, int posicaoPlayerMapaXCheck) {
 
 	//para que o player nao saia do cenario
 	if (posicaoPlayerMapaYCheck < 0) {
@@ -165,7 +164,7 @@ bool SceneManager::check_colision(int posicaoPlayerMapaYCheck, int posicaoPlayer
 	}
 
 	//se o boneco quiser andar para o tile 7 que é a pedra não vai conseguir
-	if (mapa[posicaoPlayerMapaYCheck][posicaoPlayerMapaXCheck] == 7) {
+	if (mapa[posicaoPlayerMapaYCheck][posicaoPlayerMapaXCheck] == 6) {
 
 		posicaoPlayerMapaX = posicaoAnteriorPlayerMapaX;
 		posicaoPlayerMapaY = posicaoAnteriorPlayerMapaY;
@@ -174,7 +173,7 @@ bool SceneManager::check_colision(int posicaoPlayerMapaYCheck, int posicaoPlayer
 	}
 
 	return true;
-	
+
 }
 
 void SceneManager::do_movement()
@@ -185,7 +184,7 @@ void SceneManager::do_movement()
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 
-		
+
 
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
@@ -193,7 +192,7 @@ void SceneManager::do_movement()
 		posicaoPlayerMapaX--;
 		posicaoPlayerMapaY--;
 
-		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)){
+		if (check_colision(posicaoPlayerMapaY, posicaoPlayerMapaX)) {
 
 			posicaoPlayerTelaY -= offsetMovimentacaoPlayer;
 
@@ -204,7 +203,7 @@ void SceneManager::do_movement()
 
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		
+
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
@@ -222,7 +221,7 @@ void SceneManager::do_movement()
 		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		
+
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
@@ -240,7 +239,7 @@ void SceneManager::do_movement()
 		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		
+
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
@@ -258,7 +257,7 @@ void SceneManager::do_movement()
 		}
 	}
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		
+
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
@@ -275,7 +274,8 @@ void SceneManager::do_movement()
 
 		}
 
-	}else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
@@ -293,8 +293,9 @@ void SceneManager::do_movement()
 
 		}
 
-	}else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		
+	}
+	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+
 		posicaoAnteriorPlayerMapaX = posicaoPlayerMapaX;
 		posicaoAnteriorPlayerMapaY = posicaoPlayerMapaY;
 
@@ -330,7 +331,7 @@ void SceneManager::do_movement()
 		}
 
 	}
-	
+
 	if (posicaoTexturaSpritesheetPlayer != 0) {
 		/*8 - w , 1 - w+a, 2 - w+d,  3 - s, 4 - s+a, 5 - s+d, 6 - a - 7 - d */
 		if (posicaoTexturaSpritesheetPlayer != posicaoAnteriorTexturaSpritesheetPlayer) {
@@ -364,14 +365,14 @@ void SceneManager::renderBackGround()
 
 	float xi = 0.0, yi = 0.0;
 	for (int i = 0; i < tamanhoMapaX; i++)
-	{	
+	{
 		for (int j = 0; j < tamanhoMapaY; j++)
 		{
 			// Create transformations 
 			model = glm::mat4();
 
-			xi = ((i - j) * wtTile / 2.0f) + xo;
-			yi = ((i + j) * htTile / 2.0f) + yo;
+			xi = ((j - i) * wtTile / 2.0f) + comecaMontagemCenarioX;
+			yi = ((i + j) * htTile / 2.0f) + comecaMontagemCenarioY;
 
 			model = glm::translate(model, glm::vec3(xi, yi, 0.0));
 
@@ -379,7 +380,7 @@ void SceneManager::renderBackGround()
 			GLint modelLoc = glGetUniformLocation(shader->Program, "model");
 
 			// Pass them to the shaders
-			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));	
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
 			GLint offsetLoc = glGetUniformLocation(shader->Program, "offsetUV");
 			GLfloat TexX = 0.0f;
@@ -388,7 +389,7 @@ void SceneManager::renderBackGround()
 				TexY = 2.0f / 11.0f;
 				TexX = (mapa[i][j] / 11.0f) - 2;
 			}
-			else if(mapa[i][j] > 10) {
+			else if (mapa[i][j] > 10) {
 				TexY = 1.0f / 11.0f;
 				TexX = (mapa[i][j] / 11.0f) - 1;
 			}
@@ -465,19 +466,20 @@ void SceneManager::run()
 	//GAME LOOP
 	while (!glfwWindowShouldClose(window))
 	{
-		
+
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 
 		//Update method(s)
 		do_movement();
+		check_colision_clickMouse();
 		setupScene();
 		renderBackGround();
 
 		//Render Player
 		setupPlayer();
 		renderPlayer();
-		
+
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
 	}
@@ -494,10 +496,10 @@ void SceneManager::setupScene()
 {
 	float vertices[] = {
 		//positions                 // colors           // texture coords
-		wtTile/2, htTile,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f,         vTextureTile, // top 
-		wtTile,   htTile/2, 0.0f,   0.0f, 1.0f, 0.0f,   uTextureTile, vTextureTile, // right
-		0.0f,	  htTile/2, 0.0f,   0.0f, 0.0f, 1.0f,	0.0f,         0.0f, // left
-		wtTile/2, 0.0f,     0.0f,   1.0f, 1.0f, 0.0f,	uTextureTile, 0.0f  // down
+		wtTile / 2, htTile,   0.0f,   1.0f, 0.0f, 0.0f,   0.0f,         vTextureTile, // top 
+		wtTile,   htTile / 2, 0.0f,   0.0f, 1.0f, 0.0f,   uTextureTile, vTextureTile, // right
+		0.0f,	  htTile / 2, 0.0f,   0.0f, 0.0f, 1.0f,	0.0f,         0.0f, // left
+		wtTile / 2, 0.0f,     0.0f,   1.0f, 1.0f, 0.0f,	uTextureTile, 0.0f  // down
 	};
 
 	unsigned int indices[] = {
@@ -607,16 +609,16 @@ void SceneManager::setupTexture(int textura)
 	// set texture filtering parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
+
 	int width, height, nrChannels;
 
 	unsigned char *data;
 
-	if(textura == 1)
+	if (textura == 1)
 		data = stbi_load("../textures/tileset.png", &width, &height, &nrChannels, 0);
 	else
 		data = stbi_load("../textures/cowboy.png", &width, &height, &nrChannels, 0);
-	
+
 	if (data)
 	{
 		if (textura == 1) {
@@ -644,10 +646,191 @@ void SceneManager::setupTexture(int textura)
 
 void SceneManager::mouseButtonCallback(GLFWwindow * window, int button, int action, int mods)
 {
-	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 
-		glfwGetCursorPos(window, &xPos, &yPos);
+		glfwGetCursorPos(window, &clickMousePosicaoX, &clickMousePosicaoY);
 
-		std::cout << "Clique em: " << xPos << " : " << yPos << std::endl;
+		std::cout << "Clique em: " << clickMousePosicaoX << " : " << clickMousePosicaoY << std::endl;
 	}
+}
+
+void SceneManager::check_colision_clickMouse()
+{
+	if (clickMousePosicaoY != 0 && clickMousePosicaoX != 0) {
+		if ((clickMousePosicaoY >= comecaMontagemCenarioY) && (clickMousePosicaoY <= (comecaMontagemCenarioY + (20 * 10)))) {
+			if (((clickMousePosicaoX <= (comecaMontagemCenarioX + (40 * 9))) && (clickMousePosicaoX >= (comecaMontagemCenarioX - (40 * 11))))) {
+
+
+
+				//calcula distancia Y
+				float distanciaCadaMetadeTrianguloY = htTile / 2.0f; // 40/2 == 20.0f
+				int quantidadeMetadesTriangulosY = tamanhoMapaY * 2; // 10*2 == 20
+				int posicaoClickMetadeTrianguloMapaY = 0;
+				float indiceMenorCalculoMetadeTrianguloY = 100.0f;
+				float indiceMaiorCalculoMetadeTrianguloY = indiceMenorCalculoMetadeTrianguloY + distanciaCadaMetadeTrianguloY;
+				float matrizLinhaVerticalTriangulo[20][40]; //x == 20  y == 40
+
+				for (int i = 0; i < quantidadeMetadesTriangulosY; i++) {
+					if (clickMousePosicaoY >= indiceMenorCalculoMetadeTrianguloY && clickMousePosicaoY < indiceMaiorCalculoMetadeTrianguloY) {
+						posicaoClickMetadeTrianguloMapaY = i;
+						i = quantidadeMetadesTriangulosY;
+					}
+					indiceMenorCalculoMetadeTrianguloY = indiceMenorCalculoMetadeTrianguloY + distanciaCadaMetadeTrianguloY;
+					indiceMaiorCalculoMetadeTrianguloY = indiceMaiorCalculoMetadeTrianguloY + distanciaCadaMetadeTrianguloY;
+				}
+
+				/////////////// TODO ver se esta em relacao a 20!!!!!!!!
+
+				//calcula distancia X
+				float distanciaCadaMetadeTrianguloX = wtTile / 2.0f; //80/2 == 40.0f
+				int quantidadeMetadeTriangulosComecoX = 2;
+				int posicaoClickMetadeTrianguloMapaX = 0;
+
+				int quantidadeMetadesTriangulosLoopAtualX = 0;
+				int quantidadeLosangosX = 0;
+				//posicaoClickMetadeTrianguloMapaY;
+
+				if (posicaoClickMetadeTrianguloMapaY < 10) {
+					quantidadeLosangosX = posicaoClickMetadeTrianguloMapaY;
+					quantidadeMetadesTriangulosLoopAtualX = quantidadeLosangosX * quantidadeMetadeTriangulosComecoX;
+				}
+				else if (posicaoClickMetadeTrianguloMapaY >= 10 && posicaoClickMetadeTrianguloMapaY < 20) {
+					quantidadeLosangosX = 20 - posicaoClickMetadeTrianguloMapaY;
+					quantidadeMetadesTriangulosLoopAtualX = quantidadeLosangosX * quantidadeMetadeTriangulosComecoX;
+				}
+
+				float indiceMenorCalculoMetadeTrianguloX_Inicial = 420.0f;
+
+				float indiceMenorCalculoMetadeTrianguloX = indiceMenorCalculoMetadeTrianguloX_Inicial - (distanciaCadaMetadeTrianguloX * quantidadeLosangosX);
+
+				float indiceMaiorCalculoMetadeTrianguloX = indiceMenorCalculoMetadeTrianguloX + distanciaCadaMetadeTrianguloX;
+
+
+				for (int j = 0; j < quantidadeMetadesTriangulosLoopAtualX; j++) {
+					if (clickMousePosicaoX >= indiceMenorCalculoMetadeTrianguloX && clickMousePosicaoX < indiceMaiorCalculoMetadeTrianguloX) {
+						posicaoClickMetadeTrianguloMapaX = j;
+						j = quantidadeMetadesTriangulosLoopAtualX;
+					}
+					indiceMenorCalculoMetadeTrianguloX = indiceMenorCalculoMetadeTrianguloX + distanciaCadaMetadeTrianguloX;
+					indiceMaiorCalculoMetadeTrianguloX = indiceMaiorCalculoMetadeTrianguloX + distanciaCadaMetadeTrianguloX;
+				}
+
+				//preciso validar se esta mesmo dentro da metade do triangulo
+
+				//comecaMontagemCenarioX == 500 -> COMECA NA PONTA ESQUERDA do triangulo
+				//comecaMontagemMapaY == 100
+
+				//int parOuImparY = posicaoClickMetadeTrianguloMapaY % 2;
+				//int parOuImparX = posicaoClickMetadeTrianguloMapaX % 2;
+
+				//
+				//int valorPontaDeBaixo_LinhaHipotenusaY = comecaMontagemCenarioY - (distanciaCadaMetadeTrianguloY * posicaoClickMetadeTrianguloMapaY);
+				//
+				//int valorPontaDeCima_LinhaHipotenusaY = (comecaMontagemCenarioY - (distanciaCadaMetadeTrianguloY * posicaoClickMetadeTrianguloMapaY)) + distanciaCadaMetadeTrianguloY;
+
+				//int valoresLinhaHipotenusaY[20]; //20, 1 de cada vez
+
+				////cima esquerda 
+				//if(parOuImparY == 1 && parOuImparX == 1){
+
+				//	valoresLinhaHipotenusaY[0] = valorPontaDeBaixo_LinhaHipotenusaY;
+				//	for (int i = 1; i < 20; i++) {
+				//		valorPontaDeBaixo_LinhaHipotenusaY = +1.0f;
+				//		valoresLinhaHipotenusaY[i] = valorPontaDeBaixo_LinhaHipotenusaY;
+				//	}
+
+				////cima direita
+				//} else if (parOuImparY == 1 && parOuImparX == 0) {
+
+				//	valoresLinhaHipotenusaY[0] = valorPontaDeCima_LinhaHipotenusaY;
+				//	for (int i = 1; i < 20; i++) {
+				//		valorPontaDeCima_LinhaHipotenusaY = -1.0f;
+				//		valoresLinhaHipotenusaY[i] = valorPontaDeCima_LinhaHipotenusaY;
+				//	}
+
+				////baixo esquerda
+				//} else if (parOuImparY == 0 && parOuImparX == 1) {
+
+				//	valoresLinhaHipotenusaY[0] = valorPontaDeCima_LinhaHipotenusaY;
+				//	for (int i = 1; i < 20; i++) {
+				//		valorPontaDeCima_LinhaHipotenusaY = -1.0f;
+				//		valoresLinhaHipotenusaY[i] = valorPontaDeCima_LinhaHipotenusaY;
+				//	}
+
+				////baixo direita
+				//} else if (parOuImparY == 0 && parOuImparX == 0) {
+
+				//	valoresLinhaHipotenusaY[0] = valorPontaDeBaixo_LinhaHipotenusaY;
+				//	 for (int i = 1; i < 20; i++) {
+				//		 valorPontaDeBaixo_LinhaHipotenusaY = +1.0f;
+				//		 valoresLinhaHipotenusaY[i] = valorPontaDeBaixo_LinhaHipotenusaY;
+				//	 }
+
+				//}
+
+				//
+
+				//int valorComecoCalculoX = comecaMontagemCenarioX + (distanciaCadaMetadeTrianguloX * posicaoClickMetadeTrianguloMapaX);
+
+				//float valoresLinhaHipotenusaX[20]; //40, 2 de cada vez
+
+				//valoresLinhaHipotenusaX[0] = valorComecoCalculoX;
+				//for (int i = 1; i < 20; i++) {
+
+				//	valoresLinhaHipotenusaX[i] = + 2.0f ;
+
+				//}
+
+
+				//int ultimoValorValidoX = 0;
+
+				//for (int i = 0; i < 20; i++) {
+				//	if (clickMousePosicaoX <= valoresLinhaHipotenusaX[i]){
+				//		ultimoValorValidoX = i;
+				//		i = 20;
+				//	}
+				//}
+
+				//bool clicou;
+				//
+				//if (clickMousePosicaoY <= valoresLinhaHipotenusaY[ultimoValorValidoX]) {
+				//	clicou = true;
+				//} else {
+				//	clicou = false;
+				//}
+
+
+
+
+				//consigo dizer qual o item qual tile está sendo clicado
+
+				////////////TODO colocar um validador pra ver se realmente o valor vem pra ca !!!!!!!
+
+				int valorX = posicaoClickMetadeTrianguloMapaY;
+				int valorY = posicaoClickMetadeTrianguloMapaX;
+
+				posicaoTileMudarX = valorX / 2;
+				posicaoTileMudarY = valorY / 2;
+
+				if (valorY % 2 == 1) {
+
+					posicaoTileMudarY = posicaoTileMudarY +1;
+				}
+				if (valorX % 2 == 1) {
+
+					posicaoTileMudarX = posicaoTileMudarX +1;
+
+				}
+
+				posicaoTileMudarX = posicaoTileMudarX - 1;
+				posicaoTileMudarY = posicaoTileMudarY - 1;
+
+				mapa[posicaoTileMudarX][posicaoTileMudarY] = 7;
+
+				std::cout << "x: " << posicaoTileMudarX << " : y :" << posicaoTileMudarY << std::endl;
+
+			}
+		}
+	}
+
 }

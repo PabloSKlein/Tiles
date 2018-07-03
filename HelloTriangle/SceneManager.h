@@ -39,7 +39,7 @@ public:
 	void setupTexture(int textura); //apenas mostra como criar uma textura
 
 	static void mouseButtonCallback(GLFWwindow *window , int button, int action, int mods);
-
+	void check_colision_clickMouse();
 
 private:
 	
