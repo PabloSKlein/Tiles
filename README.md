@@ -1,7 +1,7 @@
 # Jogo Isométrico
 Projeto de um game isometrico, destinado para realização do trabalho da disciplina de Processamento Gráfico, Unisinos 2018-1.
 
-Alunos: Pablo; Savanna.
+Alunos: Pablo Klein; [Savanna Denega](https://github.com/savannadenega).
 
 ### Recursos utilizados
 
